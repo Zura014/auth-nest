@@ -3,29 +3,32 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-    // @InjectRepository(UserEntity)
-    // private readonly userRepository: Repository<UserEntity>,
-    // @InjectRepository(UserEntity)
-    // private readonly userRepository: Repository<UserEntity>,
+    private userRepository: Repository<UserEntity>,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<any> {
-    // const { email, password, username } = createUserDto;
+    const user = await this.userRepository.create(createUserDto);
+    return this.userRepository.save(user);
+  }
 
-    // const defaultRole = 'user';
+  async showAllUsers(): Promise<any> {
+    return await this.userRepository.find();
+  }
 
-    // const existingUser = await this.userRepository.findOne({
-    //   where: {
-    //     username,
-    //     email
-    //   },
-    // });
-    console.log(createUserDto);
+  async updateUser(id: number, userData: Partial<UpdateUserDto>): Promise<any> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    await this.userRepository.update({ id }, userData);
+    return user;
+  }
+
+  async getUser(id: number): Promise<any> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    return user;
   }
 }

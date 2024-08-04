@@ -7,10 +7,20 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { length: 255, nullable: false, unique: false })
+  @Column('varchar', {
+    length: 255,
+    nullable: true,
+    unique: false,
+    default: '',
+  })
   firstName: string;
 
-  @Column('varchar', { length: 255, nullable: false, unique: false })
+  @Column('varchar', {
+    length: 255,
+    nullable: true,
+    unique: false,
+    default: '',
+  })
   lastName: string;
 
   @Column('varchar', { length: 255, nullable: false, unique: true })
