@@ -12,16 +12,19 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<any> {
+  async createUser(createUserDto: CreateUserDto): Promise<CreateUserDto> {
     const user = await this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
 
-  async showAllUsers(): Promise<any> {
+  async showAllUsers(): Promise<UserEntity[]> {
     return await this.userRepository.find();
   }
 
-  async updateUser(id: number, userData: Partial<UpdateUserDto>): Promise<any> {
+  async updateUser(
+    id: number,
+    userData: Partial<UpdateUserDto>,
+  ): Promise<Partial<UpdateUserDto>> {
     const user = await this.userRepository.findOne({ where: { id } });
     await this.userRepository.update({ id }, userData);
     return user;
