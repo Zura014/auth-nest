@@ -5,6 +5,9 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ConfigValidationSchema } from 'config.schema';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { LogsModule } from './logs/logs.module';
 
 @Module({
   imports: [
@@ -13,6 +16,18 @@ import { ConfigValidationSchema } from 'config.schema';
       envFilePath: '.env.stage.dev',
       validationSchema: ConfigValidationSchema,
     }),
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 3,
+      },
+      {
+        name: 'long',
+        ttl: 60000,
+        limit: 10
+      }
+    ]),
     // TypeOrmModule.forRoot({
     //   type: 'mysql',
     //   host: 'localhost',
@@ -37,8 +52,14 @@ import { ConfigValidationSchema } from 'config.schema';
         synchronize: true,
       }),
     }),
+    LogsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ConfigService],
+  providers: [AppService, ConfigService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
+  ],
 })
 export class AppModule {}
