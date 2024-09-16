@@ -7,7 +7,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ConfigValidationSchema } from 'config.schema';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { LogsModule } from './logs/logs.module';
 
 @Module({
   imports: [
@@ -25,19 +24,9 @@ import { LogsModule } from './logs/logs.module';
       {
         name: 'long',
         ttl: 60000,
-        limit: 10
-      }
+        limit: 10,
+      },
     ]),
-    // TypeOrmModule.forRoot({
-    //   type: 'mysql',
-    //   host: 'localhost',
-    //   port: 3306,
-    //   username: 'root',
-    //   password: 'omJUmt6a',
-    //   database: 'nest-auth',
-    //   entities: [__dirname + '/**/entity/*.entity{.ts,.js}'],
-    //   synchronize: true,
-    // }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -52,14 +41,15 @@ import { LogsModule } from './logs/logs.module';
         synchronize: true,
       }),
     }),
-    LogsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ConfigService,
+  providers: [
+    AppService,
+    ConfigService,
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
-    }
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}
